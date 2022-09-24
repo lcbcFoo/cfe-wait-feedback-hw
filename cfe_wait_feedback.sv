@@ -1,6 +1,6 @@
 module cfe_wait_feedback #(
-  parameter CFE_NBW_FO    = 'd13,
-  parameter CFE_NBI_FO    = -'sd2,
+  parameter CFE_NBW_FO    = 'd15,
+  parameter CFE_NBI_FO    = -'sd3,
   parameter CFE_NBW_LAT   = 'd32
 )
 (
