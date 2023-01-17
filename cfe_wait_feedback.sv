@@ -24,11 +24,12 @@ module cfe_wait_feedback #(
     
 // Configuration - to be moved to register bank
   wire enable_feedback = 1;
-  wire [CFE_NBW_FO-1:0] reset_threshold = 13'h200;
+  wire [CFE_NBW_FO-1:0] decrease_threshold = 13'h200;
   wire [CFE_NBW_FO-1:0] increase_threshold = 13'h50;
   wire [CFE_NBW_LAT-1:0] increase_step = 32'h100;
   wire [CFE_NBW_LAT-1:0] default_wait = 32'h100;
   wire [CFE_NBW_LAT-1:0] max_wait = 32'h1000;
+  wire [CFE_NBW_LAT-1:0] min_wait = 32'h100;
 
 // Logic
   reg initialized = 0;
@@ -83,8 +84,12 @@ module cfe_wait_feedback #(
           // Update last freq. offset value
           last_fo = i_fo_value;
           // If diff is too large, reset wait to default
-          if (diff > reset_threshold)
-            wait_w = default_wait;
+          if (diff > decrease_threshold)
+            wait_calc = wait_w - increase_step;
+            if (wait_calc < min_wait)
+              wait_w = min_wait;
+            else
+              wait_w = wait_calc;
           // If diff is small, increase wait respecting max wait
           else if (diff < increase_threshold) begin
             wait_calc = wait_w + increase_step;
